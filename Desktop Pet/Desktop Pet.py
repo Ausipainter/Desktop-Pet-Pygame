@@ -54,14 +54,18 @@ try:
      
     
     class Desktop_Pet():
-        def __init__(self,speed,pack_name,count):
+        def __init__(self,speed,pack_name,count,w,h):
     
-
+            self.w = w
+            self.h = h
+            
             self.frame_counter = count
             self.pack = os.path.join(SPRITEDIR,pack_name)
             self.idlepack = os.path.join(self.pack,"Idle")
             self.walkpack = os.path.join(self.pack, "Walk")
             self.img = pygame.image.load(os.path.join(self.idlepack,"1.png")).convert_alpha()
+            self.img = pygame.transform.scale(self.img,(w,h))
+            
             self.mask = pygame.mask.from_surface(self.img)
             self.sprite = self.img
             self.width = self.img.get_width()
@@ -135,6 +139,10 @@ try:
                 if self.frame_counter % 5 == 0:  
                     self.current = (self.current + 1) % len(self.walk_images)
                 self.sprite = pygame.transform.flip(self.walk_images[self.current], True, False)
+
+            self.sprite = pygame.transform.scale(self.sprite,(self.w,self.h))
+            
+                
                 
             
             WINDOW.blit(self.sprite, (self.x, self.y))
@@ -278,7 +286,7 @@ try:
     
 
     ###slime = Desktop_Pet(86,65,1,"Slime",10)
-    llama = Desktop_Pet(1,"LLama", 6)
+    llama = Desktop_Pet(1,"LLama", 6,100,100)
 
     def check_click(mousepos):
         for pet in petList:
