@@ -324,9 +324,10 @@ class Desktop_Pet():
    
 
 
-###slime = Desktop_Pet(86,65,1,"Slime",10)
+#slime = Desktop_Pet(1,"Slime",10,100,100)
+cappy = Desktop_Pet(1,"CappyBara", 4, 100,100)
 llama = Desktop_Pet(1,"LLama", 6,100,100)
-##man = Desktop_Pet(1,"Man",4,100,100)
+##man = Desktop_Pet(1,"Man",4,50,50)
 
 
 def check_click(mousepos):
