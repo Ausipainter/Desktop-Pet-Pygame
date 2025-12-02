@@ -50,7 +50,7 @@ top_thread = threading.Thread(target=keep_on_top, daemon=True)
 top_thread.start()
 
 petList = []
-STATES = ["none","jump","walkl","walkr","flip"]
+STATES = ["none","walkl","walkr","flip"]
  
 
 class Desktop_Pet():
@@ -201,12 +201,8 @@ class Desktop_Pet():
                         new_state = random.randint(1, 1000)
                         if new_state < 101:
                             new_state = "jump"
-                        elif new_state < 551:
-                            new_state = "walkl"
                         else:
-                            new_state = "walkr"
-                        if new_state != "none":
-                            self.current = 0
+                            new_state = random.choice(STATES)
                         self.state = new_state
                         self.random = random.randint(1,1000)
                     
