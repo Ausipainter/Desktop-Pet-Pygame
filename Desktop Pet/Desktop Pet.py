@@ -50,7 +50,7 @@ top_thread = threading.Thread(target=keep_on_top, daemon=True)
 top_thread.start()
 
 petList = []
-STATES = ["walkl","walkr","none"]
+STATES = ["none","jump","walkl","walkr"]
  
 
 class Desktop_Pet():
@@ -91,7 +91,7 @@ class Desktop_Pet():
         self.walk_images = []
         self.ground = HEIGHT - self.height
         self.wallr = WIDTH - self.width
-        
+        self.jump_state = 0 
         
         self.idle_images = []
         files = sorted(
@@ -151,36 +151,40 @@ class Desktop_Pet():
 
       
     def update_state(self):
+       
         self.rect = self.sprite.get_rect(topleft=(self.x, self.y))
         
         if self.free:
-            if self.state == "none":
-                if self.y < self.ground:
+            if self.state in ("none", "jump"):
+                if self.y < self.ground or self.state == "jump":
                     self.y += self.vy
                     self.vy += 0.4
                 elif self.y != self.ground:
                     self.y = self.ground
-                    self.vy = 0
+                    if not self.state == "jump":
+                        self.vy = 0
                 
-                if self.x >= 0 and self.x < self.wallr:
-                    self.x += self.vx
+                
+                self.x += self.vx
                 if self.x > self.wallr:
                     self.x = self.wallr
+                    self.vx = -self.vx / 2
                 if self.x < 0:
                     self.x = 0
+                    self.vx = -self.vx / 2
                     
                 if self.vx > 0:
                     self.vx -= 0.01
-                    if self.y < self.ground:
-                        self.vx -= 0.1
+                    if self.on_ground:
+                        self.vx -= self.vx/20
                 elif self.vx < 0:
                     self.vx += 0.01
-                    if self.y < self.ground:
-                        self.vx += 0.1
+                    if  self.on_ground:
+                        self.vx -= self.vx/20
                 else:
                     self.vx = 0
 
-            if self.y == self.ground:
+            if self.y >= self.ground:
                 self.on_ground = True
 
             else:
@@ -192,7 +196,13 @@ class Desktop_Pet():
                 if not self.delay:
                     
                     if self.on_ground:
-                        new_state = random.choice(STATES)
+                        new_state = random.randint(1, 1000)
+                        if new_state < 101:
+                            new_state = "jump"
+                        elif new_state < 551:
+                            new_state = "walkl"
+                        else:
+                            new_state = "walkr"
                         if new_state != "none":
                             self.current = 0
                         self.state = new_state
@@ -200,6 +210,8 @@ class Desktop_Pet():
                     
                 else:
                     self.delay_timer -= 1
+            
+                
                 
                 
                     
@@ -260,6 +272,33 @@ class Desktop_Pet():
                 self.delay_timer = 120
                 self.delay = True
                 self.current = 0
+        elif self.state == "jump":
+            if self.jump_state == 0:
+                if random.randint(1,2) == 2:
+                    self.vx = random.randint(1,20)
+                    self.vy = -random.randint(1,20)
+                    
+                    
+                else:
+                    self.vx = -random.randint(1,20)
+                    self.vy = -random.randint(1,20) 
+                    
+                print("jump")
+                
+
+                self.jump_state = 1
+
+            elif self.jump_state == 1:
+                if self.on_ground:
+                    self.jump_state = 0
+                    self.state = "none"
+                    self.delay_timer = 120
+                    self.delay = True
+                    self.current = 0
+
+
+            
+                    
                 
                 
             
