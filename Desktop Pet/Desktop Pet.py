@@ -18,8 +18,10 @@ try:
     import win32gui
 except ImportError:
     install_package('pywin32')
-    import win32gui
-    import win32con
+
+# Import at module level (regardless of whether we just installed or it was already there)
+import win32gui
+import win32con
 
 # Rest of imports
 import ctypes
