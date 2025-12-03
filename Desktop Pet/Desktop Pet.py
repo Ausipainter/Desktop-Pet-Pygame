@@ -59,7 +59,7 @@ ctypes.windll.user32.SetLayeredWindowAttributes(hwnd, color_key, 0, 0x00000001)
 print(f"Window created: {WIDTH}x{HEIGHT}")
 print(f"Window handle: {hwnd}")
 
-# Thread to keep window on top
+
 def keep_on_top():
     while True:
         try:
@@ -74,6 +74,8 @@ top_thread.start()
 petList = []
 STATES = ["walkl","walkr"]
  
+extra = os.path.join(MAINDIR,"Extra")
+splat_img = pygame.image.load(os.path.join(extra, "Splat.png"))
 
 class Desktop_Pet():
     def __init__(self,speed,pack_name,count,w,h):
@@ -85,10 +87,12 @@ class Desktop_Pet():
         self.pack = os.path.join(SPRITEDIR,pack_name)
         self.idlepack = os.path.join(self.pack,"Idle")
         self.walkpack = os.path.join(self.pack, "Walk")
+        self.extras = os.path.join(self.pack,"Extras")
+       
         self.img = pygame.image.load(os.path.join(self.idlepack,"1.png")).convert_alpha()
         self.img = pygame.transform.scale(self.img,(w,h))
         try:
-            self.dead_img = pygame.image.load(os.path.join(self.pack,"Dead.png"))
+            self.dead_img = pygame.image.load(os.path.join(self.extras,"Dead.png"))
             self.dead_img = pygame.transform.scale(self.dead_img,(w,h))
         except:
             self.dead = "None"
@@ -202,8 +206,12 @@ class Desktop_Pet():
                     if self.vy >= 100:
                         if self.dead != "None":
                             self.dead = True
+                        if self.dead:
+                            add_splat(self.x,self.y)
                     self.y = self.ground  # Clamp to ground
+                        
                     self.vy = 0
+                        
                 
                 
                 self.x += self.vx
@@ -400,8 +408,23 @@ def check_click(mousepos):
             return
         else:
             pet.free = True
+splatList = []
+def add_splat(x,y):
+    
+    x -= (WIDTH/20)
+    y -= (HEIGHT/20)
+    
+    
+    
+    splatList.append((x,y))
+    print(splatList)
 
-# Clock for FPS
+def draw_splat():
+    for splat in splatList:
+        x, y = splat
+        WINDOW.blit(splat_img,(x,y))
+        
+        
 clock = pygame.time.Clock()
 FPS = 60
 
@@ -431,15 +454,28 @@ while running:
             for desktoppet in petList:
                 if not desktoppet.free:
                     desktoppet.vx, desktoppet.vy = dx, dy
+                    
  
     WINDOW.fill((2, 0, 0))
     for i in petList:
+        if not i.free:
+            if dy >= 50:
+                if dy >= 100:
+                    i.dead = True
+        
+        # Move this outside so it checks whether held or not
+        if i.dead and i.y >= i.ground and (i.vy >= 100 or (dy >=10 and not i.free)):
+            add_splat(i.x, i.y)
+        
         i.update_state()
         i.draw()
         i.action()
+
+
+        
         ##print(i.pack + " " + i.state)
         
-    
+    draw_splat()
     pygame.display.flip()
     clock.tick(FPS)
 
