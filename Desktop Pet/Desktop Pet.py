@@ -329,8 +329,10 @@ class Desktop_Pet():
         return False
    
 
-
-#slime = Desktop_Pet(1,"Slime",10,100,100)
+try:
+    slime = Desktop_Pet(1,"Slime",10,100,100)
+except:
+    pass
 try:
     cappy = Desktop_Pet(1,"CappyBara", 4, 100,100)
 except:
@@ -339,7 +341,11 @@ try:
     llama = Desktop_Pet(1,"LLama", 6,100,100)
 except:
     pass
-##man = Desktop_Pet(1,"Man",4,50,50)
+try:
+    
+    man = Desktop_Pet(1,"Man",4,50,50)
+except:
+    pass
 
 
 def check_click(mousepos):
