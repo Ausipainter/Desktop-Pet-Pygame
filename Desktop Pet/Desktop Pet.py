@@ -80,13 +80,20 @@ class Desktop_Pet():
 
         self.w = w
         self.h = h
-        
+        self.dead = False
         self.frame_counter = count
         self.pack = os.path.join(SPRITEDIR,pack_name)
         self.idlepack = os.path.join(self.pack,"Idle")
         self.walkpack = os.path.join(self.pack, "Walk")
         self.img = pygame.image.load(os.path.join(self.idlepack,"1.png")).convert_alpha()
         self.img = pygame.transform.scale(self.img,(w,h))
+        try:
+            self.dead_img = pygame.image.load(os.path.join(self.pack,"Dead.png"))
+            self.dead_img = pygame.transform.scale(self.dead_img,(w,h))
+        except:
+            self.dead = "None"
+            
+            
         
         self.mask = pygame.mask.from_surface(self.img)
         self.sprite = self.img
@@ -116,7 +123,7 @@ class Desktop_Pet():
         self.jump_state = 0
         self.original = self.sprite
         self.rot = 0
-        
+        self.dead = False
         self.idle_images = []
         files = sorted(
             [f for f in os.listdir(self.walkpack) if f.lower().endswith(('.png','.jpg','.jpeg'))],
@@ -142,6 +149,8 @@ class Desktop_Pet():
         
         
     def draw(self):
+        
+
         if self.state == "none":
             if self.on_ground:
                 
@@ -164,8 +173,12 @@ class Desktop_Pet():
                 self.current = (self.current + 1) % len(self.walk_images)
             self.sprite = pygame.transform.flip(self.walk_images[self.current], True, False)
 
-        self.sprite = pygame.transform.scale(self.sprite,(self.w,self.h))
         
+       
+        if self.state == "dead":
+            self.sprite = self.dead_img
+
+        self.sprite = pygame.transform.scale(self.sprite,(self.w,self.h))
             
             
         
@@ -179,14 +192,18 @@ class Desktop_Pet():
         self.rect = self.sprite.get_rect(topleft=(self.x, self.y))
         
         if self.free:
-            if self.state in ("none", "jump"):
+            if self.state in ("none", "jump","dead"):
                 if self.y < self.ground or self.state == "jump":
                     self.y += self.vy
                     self.vy += 0.4
-                elif self.y != self.ground:
-                    self.y = self.ground
-                    if not self.state == "jump":
-                        self.vy = 0
+                    
+                # Check if we've landed or gone past the ground
+                if self.y >= self.ground and self.state != "jump":  # Changed condition
+                    if self.vy >= 100:
+                        if self.dead != "None":
+                            self.dead = True
+                    self.y = self.ground  # Clamp to ground
+                    self.vy = 0
                 
                 
                 self.x += self.vx
@@ -213,11 +230,16 @@ class Desktop_Pet():
 
             else:
                 self.on_ground = False
-
+            if self.dead != "None":
+                if self.dead:
+                    self.state = "dead"
+                
+            
             if self.state == "none":
                 if self.delay_timer == 0:
                     self.delay = False
                 if not self.delay:
+                    
                     
                     if self.on_ground:
                         new_state = random.randint(1, 1000)
@@ -244,7 +266,8 @@ class Desktop_Pet():
             
             self.y = mousey - (self.height/2)
             self.x = mousex - (self.width/2)
-            self.state = "none"
+            if not self.dead:
+                self.state = "none"
             self.on_ground = False
             self.delay_timer = 240
             self.delay = True
