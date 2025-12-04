@@ -82,7 +82,6 @@ class Desktop_Pet():
 
         self.w = w
         self.h = h
-        self.dead = False
         self.frame_counter = count
         self.pack = os.path.join(SPRITEDIR,pack_name)
         self.idlepack = os.path.join(self.pack,"Idle")
@@ -94,8 +93,11 @@ class Desktop_Pet():
         try:
             self.dead_img = pygame.image.load(os.path.join(self.extras,"Dead.png"))
             self.dead_img = pygame.transform.scale(self.dead_img,(w,h))
+            self.dead = False
+            self.has_dead_sprite = True
         except:
-            self.dead = "None"
+            self.has_dead_sprite = False
+            self.dead = False
             
             
         
@@ -127,7 +129,7 @@ class Desktop_Pet():
         self.jump_state = 0
         self.original = self.sprite
         self.rot = 0
-        self.dead = False
+        
         self.idle_images = []
         files = sorted(
             [f for f in os.listdir(self.walkpack) if f.lower().endswith(('.png','.jpg','.jpeg'))],
@@ -204,10 +206,11 @@ class Desktop_Pet():
                 # Check if we've landed or gone past the ground
                 if self.y >= self.ground and self.state != "jump":  # Changed condition
                     if self.vy >= 100:
-                        if self.dead != "None":
-                            self.dead = True
-                        if self.dead:
-                            add_splat(self.x,self.y)
+                        if self.has_dead_sprite:
+                            if self.dead == False:
+                                self.dead = True
+                            if self.dead:
+                                add_splat(self.x,self.y)
                     self.y = self.ground  # Clamp to ground
                         
                     self.vy = 0
@@ -238,7 +241,7 @@ class Desktop_Pet():
 
             else:
                 self.on_ground = False
-            if self.dead != "None":
+            if self.has_dead_sprite:
                 if self.dead:
                     self.state = "dead"
                 
@@ -461,7 +464,9 @@ while running:
         if not i.free:
             if dy >= 50:
                 if dy >= 100:
-                    i.dead = True
+                    if i.has_dead_sprite:
+                        
+                        i.dead = True
         
         # Move this outside so it checks whether held or not
         if i.dead and i.y >= i.ground and (i.vy >= 100 or (dy >=10 and not i.free)):
