@@ -5,34 +5,25 @@ def install_package(package_name):
     print(f"Installing {package_name}...")
     subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
     print(f"{package_name} installed!")
-
-# Check pygame
 try:
     import pygame
 except ImportError:
     install_package('pygame')
     import pygame
-
-# Check pywin32
 try:
     import win32gui
 except ImportError:
     install_package('pywin32')
-
-# Import at module level (regardless of whether we just installed or it was already there)
 import win32gui
 import win32con
-
-# Rest of imports
 import ctypes
 import threading
 import time
 import os
 import random
-# Initialize Pygame
+
 pygame.init()
 
-# Create fullscreen window
 WINDOW = pygame.display.set_mode((0, 0), pygame.NOFRAME)
 WIDTH, HEIGHT = WINDOW.get_size()
 pygame.display.set_caption("Transparent Overlay")
@@ -41,25 +32,15 @@ MAINDIR = os.path.dirname(__file__)
 SPRITEDIR = os.path.join(MAINDIR, "Sprites")
 
 
-
-# Get window handle
 hwnd = pygame.display.get_wm_info()["window"]
-
-# Make window layered
 ctypes.windll.user32.SetWindowLongW(hwnd, -20, ctypes.windll.user32.GetWindowLongW(hwnd, -20) | 0x80000)
-
-# Use color-key transparency
 transparency_color = (2, 0, 0)
 color_key = (transparency_color[2] << 16) | (transparency_color[1] << 8) | transparency_color[0]
 ctypes.windll.user32.SetLayeredWindowAttributes(hwnd, color_key, 0, 0x00000001)
-
-# Don't make window click-through - we need to receive clicks on the sprite
-# The layered window with color key will handle transparency visually
-
 print(f"Window created: {WIDTH}x{HEIGHT}")
 print(f"Window handle: {hwnd}")
 
-
+talk_list = ["Hello"]
 def keep_on_top():
     while True:
         try:
@@ -72,11 +53,14 @@ top_thread = threading.Thread(target=keep_on_top, daemon=True)
 top_thread.start()
 
 petList = []
-STATES = ["walkr","walkl","climb"]
- 
+STATES = ["walkr","walkl"]
+RARESTATES = ["jump","climb","talk"]
 extra = os.path.join(MAINDIR,"Extra")
 splat_img = pygame.image.load(os.path.join(extra, "Splat.png"))
-
+speech_img = pygame.image.load(os.path.join(extra,"Speech.png"))
+red = ((100,100,100))
+speech_img = pygame.transform.scale(speech_img,(WIDTH/15, WIDTH/15))
+font = pygame.font.SysFont(None, 50) 
 class Desktop_Pet():
     def __init__(self,speed,pack_name,count,w,h):
 
@@ -168,13 +152,13 @@ class Desktop_Pet():
             else:
                 self.sprite = self.img
 
-        elif self.state == "walkl":
+        elif self.state == "walkl" or (self.x != self.targetx and self.targetx == 0):
             self.frame_counter += 1
             if self.frame_counter % 5 == 0:  
                 self.current = (self.current + 1) % len(self.walk_images)
             self.sprite = self.walk_images[self.current]
 
-        elif self.state == "walkr":
+        elif self.state == "walkr" or (self.x != self.targetx and self.targetx == self.wallr):
             self.frame_counter += 1
             if self.frame_counter % 5 == 0:  
                 self.current = (self.current + 1) % len(self.walk_images)
@@ -204,15 +188,15 @@ class Desktop_Pet():
                     self.y += self.vy
                     self.vy += 0.4
                     
-                # Check if we've landed or gone past the ground
-                if self.y >= self.ground and self.state != "jump":  # Changed condition
+                
+                if self.y >= self.ground and self.state != "jump": 
                     if self.vy >= 100:
                         if self.has_dead_sprite:
                             if self.dead == False:
                                 self.dead = True
                             if self.dead:
                                 add_splat(self.x,self.y)
-                    self.y = self.ground  # Clamp to ground
+                    self.y = self.ground  
                         
                     self.vy = 0
                         
@@ -256,7 +240,8 @@ class Desktop_Pet():
                     if self.on_ground:
                         new_state = random.randint(1, 1000)
                         if new_state < 101:
-                            new_state = "jump"
+                            new_state = random.choice(RARESTATES)
+                            
                             
                         else:
                             new_state = random.choice(STATES)
@@ -389,7 +374,9 @@ class Desktop_Pet():
                         self.y -= self.speed
 
             if self.y == self.targety and self.x == self.targetx:
-                nexttarget = random.randint(1,2)
+                nexttarget = 2
+                if self.delay and self.delay_timer <= 0:
+                    nexttarget = 1
 
                 if nexttarget == 1:
                     self.state = "none"
@@ -405,34 +392,28 @@ class Desktop_Pet():
                     self.delay_timer = 120
                     self.delay = True
                 if nexttarget == 2:
-                    
-                   
-                    self.targety = self.targety + random.randint(100,500)
-
-                
-
-
-                
-                   
+                    if not self.delay:
                         
-                
-               
-        
-            
-
-
-            
                     
-                
-                
-            
+                   
+                        self.delay_timer = random.randint(60,120)
+                        
+                        self.delay = True
+                    elif self.delay:
+                        self.delay_timer -= 1
 
-            
-        
+                        
+        if self.state == "talk":
+            add_speech(self.x + self.width/2,self.y-self.height/4,(random.choice(talk_list)))
+            self.state = "none"
+            self.delay = True
+            self.delay_timer = 120
+            print("talk")
+                
+                        
+                            
                     
-            
-            
-            
+          
     
     def is_clicked(self, mousepos):
         """Check if clicking on non-transparent part of sprite"""
@@ -489,7 +470,25 @@ def draw_splat():
         x, y = splat
         WINDOW.blit(splat_img,(x,y))
         
+speechList = []
+def add_speech(x,y,msg, duration = 120):
+    speechList.append([str(msg),x,y,duration])
+
+
+
+def draw_speech():
+    for speech in speechList[:]:
+        if speech[3] <= 0:
+            speechList.remove(speech)
+        else:
+            speech[3] -= 1
+    for speech in speechList[:]:
+        text_surface = font.render(speech[0], True, ((0,0,0)))
+        text_rect = text_surface.get_rect(center=(speech[1], speech[2]))
+        WINDOW.blit(text_surface, text_rect)
         
+ 
+            
 clock = pygame.time.Clock()
 FPS = 60
 
@@ -530,7 +529,7 @@ while running:
                         
                         i.dead = True
         
-        # Move this outside so it checks whether held or not
+       
         if i.dead and i.y >= i.ground and (i.vy >= 100 or (dy >=10 and not i.free)):
             add_splat(i.x, i.y)
         
@@ -541,10 +540,11 @@ while running:
 
         
         ##print(i.pack + " " + i.state)
-        
+    draw_speech() 
     draw_splat()
     pygame.display.flip()
     clock.tick(FPS)
+    
 
 pygame.quit()
 
