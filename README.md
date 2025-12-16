@@ -1,4 +1,4 @@
-<h1>🐾 Desktop Pet (Pygame)<h1>
+<h1>🐾 Desktop Pet (Pygame)</h1>
 
 A customizable desktop pet made with Pygame!
 
