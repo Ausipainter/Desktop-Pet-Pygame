@@ -20,23 +20,23 @@ You can easily add your own pets by dropping sprite files into the project—no 
 
 To add your own pet:
 
-  Navigate to:
+&emsp;Navigate to:
   
-   Assets/Sprites/
+&emsp;&emsp;Assets/Sprites/
    
-Create a new folder with your pet’s name.
+&emsp;Create a new folder with your pet’s name.
 
-Inside that folder, add:
+&emsp;Inside that folder, add:
 
-  A Sprites folder
+&emsp;&emsp; A Sprites folder
   
-  A Configuration.txt file
+&emsp;&emsp;A Configuration.txt file
 
-  A Display.png image
+ &emsp;&emsp;A Display.png image
 
-  A Walk folder
+&emsp;&emsp;A Walk folder
 
-  A Idle folder 
+&emsp;&emsp;A Idle folder 
 
   Inside of walk and idle folders add your animation images(see animation Rules below) 
   
