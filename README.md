@@ -7,12 +7,9 @@ You can easily add your own pets by dropping sprite files into the project—no 
 ✨ Features
 
 >Animated desktop pets
-
-Easy sprite customization
-
-Configurable size and animation speed
-
-Simple file-based setup
+>Easy sprite customization
+>Configurable size and animation speed
+>Simple file-based setup
 
 
 📁How to add a Custom Pet
