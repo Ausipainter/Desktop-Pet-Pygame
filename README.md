@@ -1,26 +1,101 @@
-Desktop Pet made in Pygame
+🐾 Desktop Pet (Pygame)
+A customizable desktop pet made with Pygame!
+You can easily add your own pets by dropping sprite files into the project—no code changes required.
 
-You can add your own pet by adding them into the Sprites folder(Located in the Assets Folder)
+✨ Features
+Animated desktop pets
 
-Your sprites must include a animation folder for walking and idle (with each frame numbered 1 - # of frames).
+Easy sprite customization
 
-To configure your pet you must add a .txt into your pets file name Configuration 
+Configurable size and animation speed
 
-there are several Configurable options such as their width, height, and fps. 
+Simple file-based setup
 
-To add configurable setting you must put in commands in this format:
-  ;cmd = #;
+
+📁How to add a Custom Pet
+
+
+To add your own pet:
+
+  Navigate to:
+  
+   Assets/Sprites/
+   
+Create a new folder with your pet’s name.
+
+Inside that folder, add:
+  A Sprites folder
+  A Configuration.txt file
+
+
+🎞️ Sprite Requirements
+
+  Your pet’s sprite folder must contain the following structure:
+  
+PetName/
+├── Sprites/
+│   ├── idle/
+│   │   ├── 1.png
+│   │   ├── 2.png
+│   │   └── ...
+│   ├── walk/
+│   │   ├── 1.png
+│   │   ├── 2.png
+│   │   └── ...
+├── Configuration.txt
+
+Animation Rules
+
+Frames must be numbered starting at 1
+
+Idle and walking animations are required
+
+All frames should be the same size
+
+
+  
+⚙️ Configuration File
+
+Each pet must include a Configuration.txt file.
+This file allows you to customize how your pet looks and animates.
+
+Command Format:
+  ;cmd = value;
 
 Example:
   ;W = 100;
-This would Change the width of the sprite to 100 pixels.
 
-Available commands:
-  W : sets width
-  H : sets height
-  fps : sets fps
+
+🛠️ Available Commands:
+  W   Sets sprite width(pixels)
+  H   Sets sprite height(pixels)
+  fps Sets animation speed (fps)
   
-By default pets are 100 pixels by 100 pixels and animate at 10 frames per second. 
 
 
-See examples of how to use commands and how to set up new pet files By viewing CappyBara in the Assets -> Sprites -> CappyBara  folder 
+🔧 Default Settings
+
+If no configuration is provided, pets will use:
+
+Width: 100 pixels
+
+Height: 100 pixels
+
+FPS: 10
+
+
+
+📚 Example Pet
+
+For a complete working example, check out:
+
+Assets/Sprites/CappyBara/
+
+
+This folder demonstrates:
+
+Correct sprite structure
+
+Proper animation setup
+
+Example configuration commands
