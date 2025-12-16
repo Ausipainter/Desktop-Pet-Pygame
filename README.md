@@ -20,41 +20,41 @@ You can easily add your own pets by dropping sprite files into the project—no 
 
 To add your own pet:
 
-&emsp;Navigate to:
+&emsp;&emsp;Navigate to:
   
-&emsp;&emsp;Assets/Sprites/
+&emsp;&emsp;&emsp;Assets/Sprites/
    
-&emsp;Create a new folder with your pet’s name.
+&emsp;&emsp;Create a new folder with your pet’s name.
 
-&emsp;Inside that folder, add:
+&emsp;&emsp;Inside that folder, add:
 
-&emsp;&emsp; A Sprites folder
+&emsp;&emsp;&emsp; A Sprites folder
   
-&emsp;&emsp;A Configuration.txt file
+&emsp;&emsp;&emsp;A Configuration.txt file
 
- &emsp;&emsp;A Display.png image
+ &emsp;&emsp;&emsp;A Display.png image
 
-&emsp;&emsp;A Walk folder
+&emsp;&emsp;&emsp;A Walk folder
 
-&emsp;&emsp;A Idle folder 
+&emsp;&emsp;&emsp;A Idle folder 
 
-  Inside of walk and idle folders add your animation images(see animation Rules below) 
+&emsp;&emsp;Inside of walk and idle folders add your animation images(see animation Rules below) 
   
-  Even if you do not have an animation for them you must have at least one image in each
+&emsp;&emsp;Even if you do not have an animation for them you must have at least one image in each
   
 
 
 🎞️ Sprite Requirements
 
-  Your pet’s sprite folder must contain the following structure:
+&emsp;Your pet’s sprite folder must contain the following structure:
   
-PetName/Sprites/idle/1.png, 2.png....
+&emsp;&emsp;PetName/Sprites/idle/1.png, 2.png....
 
-PetName/Sprites/walk/1.png, 2.png....
+&emsp;&emsp;&emsp;PetName/Sprites/walk/1.png, 2.png....
 
-PetName/Configuration.txt 
+&emsp;&emsp;&emsp;PetName/Configuration.txt 
 
-PetName/Display.png
+&emsp;&emsp;&emsp;PetName/Display.png
 
 (Display.png is used to display the pet in the selection menu)
 
@@ -62,36 +62,36 @@ PetName/Display.png
 
 Animation Rules
 
-Frames must be numbered starting at 1
+&emsp;&emsp;Frames must be numbered starting at 1
 
-Idle and walking animations are required
+&emsp;&emsp;Idle and walking animations are required
 
-All frames should be the same size
+&emsp;&emsp;All frames should be the same size
 
 
   
 ⚙️ Configuration File
 
-Each pet must include a Configuration.txt file.
+&emsp;Each pet must include a Configuration.txt file.
 
-This file allows you to customize how your pet looks and animates.
+&emsp;&emsp;&emsp;This file allows you to customize how your pet looks and animates.
 
-Command Format:
+&emsp;&emsp;Command Format:
 
-  ;cmd = value;
+  &emsp;&emsp;&emsp;;cmd = value;
 
-Example:
+&emsp;&emsp;Example:
 
-  ;W = 100;
+  &emsp;&emsp;&emsp;;W = 100;
 
 
 🛠️ Available Commands:
 
-  W   Sets sprite width(pixels)
+ &emsp;&emsp;W   Sets sprite width(pixels)
   
-  H   Sets sprite height(pixels)
+  &emsp;&emsp;H   Sets sprite height(pixels)
   
-  fps Sets animation speed (fps)
+ &emsp;&emsp;fps Sets animation speed (fps)
   
 
 
@@ -99,11 +99,11 @@ Example:
 
 If no configuration is provided, pets will use:
 
-Width: 100 pixels
+&emsp;&emsp;Width: 100 pixels
 
-Height: 100 pixels
+&emsp;&emsp;Height: 100 pixels
 
-FPS: 10
+&emsp;&emsp;FPS: 10
 
 
 
@@ -116,8 +116,8 @@ Assets/Sprites/CappyBara/
 
 This folder demonstrates:
 
-Correct sprite structure
+&emsp;&emsp;Correct sprite structure
 
-Proper animation setup
+&emsp;&emsp;Proper animation setup
 
-Example configuration commands
+&emsp;&emsp;Example configuration commands
