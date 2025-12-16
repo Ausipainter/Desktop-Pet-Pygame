@@ -32,17 +32,13 @@ Inside that folder, add:
 
   Your pet’s sprite folder must contain the following structure:
   
-PetName/
-├── Sprites/
-│   ├── idle/
-│   │   ├── 1.png
-│   │   ├── 2.png
-│   │   └── ...
-│   ├── walk/
-│   │   ├── 1.png
-│   │   ├── 2.png
-│   │   └── ...
-├── Configuration.txt
+PetName/Sprites/idle/1.png, 2.png....
+PetName/Sprites/walk/1.png, 2.png....
+Configuration.txt 
+Display.png
+(Display.png is used to display the pet in the selection menu)
+
+
 
 Animation Rules
 
