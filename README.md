@@ -93,7 +93,7 @@ H   Sets sprite height(pixels)
   
 fps Sets animation speed (fps)
   
-
+speed Sets pet speed
 
 <h1>🔧 Default Settings</h1>
 
@@ -104,6 +104,8 @@ If no configuration is provided, pets will use:
 &emsp;Height: 100 pixels
 
 &emsp;FPS: 10
+
+&emsp;speed: 1
 
 
 
