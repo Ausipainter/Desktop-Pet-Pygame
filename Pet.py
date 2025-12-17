@@ -69,7 +69,23 @@ font = pygame.font.SysFont(None, 50)
 
 
 
+def read_pet_lines(sprite_folder):
+    speech_path = os.path.join(SPRITEDIR,sprite_folder,"Speech.txt")
+    default_speech =["Hello","Hi","Play With Me"]
+    speech_list = []
+    if not os.path.exists(speech_path):
+        return default_speech
+    try:
+        with open(speech_path, 'r') as f:
+            content = f.read()
+        import re
+        speech = re.findall(';([^;]+);', content)
+        return speech
 
+    except Exception as e:
+        print(f"Error reading speech for {sprite_folder}: {e}")
+        return default_speech       
+        
 
 def read_size_config(sprite_folder):
     config_path = os.path.join(SPRITEDIR, sprite_folder, "Configuration.txt")  # Fixed indentation
@@ -130,14 +146,14 @@ def read_selected_pets():
         print(f"Error reading selected pets file: {e}")
         return None
 class Desktop_Pet():
-    def __init__(self, speed, pack_name, w, h,action_chance, animation_fps=10 ):
+    def __init__(self, speed, pack_name, w, h,action_chance,speech, animation_fps=10 ):
         self.name = pack_name
         self.w = w
         self.h = h
         self.action_chance = action_chance
         self.animation_speed = max(1, int(60 / animation_fps))  
         self.frame_counter = 0
-        
+        self.speech = speech
         self.pack = os.path.join(SPRITEDIR, pack_name)
         self.idlepack = os.path.join(self.pack, "Idle")
         self.walkpack = os.path.join(self.pack, "Walk")
@@ -490,7 +506,7 @@ class Desktop_Pet():
 
                         
         if self.state == "talk":
-            add_speech(self.x + self.width/2,self.y-self.height/4,(random.choice(talk_list)))
+            add_speech(self.x + self.width/2,self.y-self.height/4,(random.choice(self.speech)))
             self.state = "none"
             self.delay = True
             self.delay_timer = 120
@@ -520,14 +536,15 @@ for sprite_folder in sprites:
         if selected_pets is None or sprite_folder in selected_pets:
             try:
                 config = read_size_config(sprite_folder)
-                
+                phrase = read_pet_lines(sprite_folder)
                 pet = Desktop_Pet(
                     speed=config['speed'],
                     pack_name=sprite_folder,
                     w=config['W'],
                     h=config['H'],
                     animation_fps=config['fps'],
-                    action_chance=config['action']
+                    action_chance=config['action'],
+                    speech = phrase
                 )
                 print(f"Created pet: {sprite_folder} (Size: {config['W']}x{config['H']}, FPS: {config['fps']})")
             except Exception as e:
