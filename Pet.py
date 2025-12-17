@@ -73,7 +73,7 @@ font = pygame.font.SysFont(None, 50)
 
 def read_size_config(sprite_folder):
     config_path = os.path.join(SPRITEDIR, sprite_folder, "Configuration.txt")  # Fixed indentation
-    default_config = {"W": 100, "H": 100, "fps": 10, "speed": 1} 
+    default_config = {"W": 100, "H": 100, "fps": 10, "speed": 1, "action" : 1} 
     
     if not os.path.exists(config_path):
         return default_config
@@ -99,7 +99,9 @@ def read_size_config(sprite_folder):
                 elif key == 'fps':
                     config['fps'] = int(value)
                 elif key == 'speed':
-                    config['speed'] = int(value)
+                    config['speed'] = float(value)
+                elif key == 'action':
+                    config['action'] = float(value)
         
         return config
     except Exception as e:
@@ -128,12 +130,11 @@ def read_selected_pets():
         print(f"Error reading selected pets file: {e}")
         return None
 class Desktop_Pet():
-    def __init__(self, speed, pack_name, w, h, animation_fps=10):
+    def __init__(self, speed, pack_name, w, h,action_chance, animation_fps=10 ):
         self.name = pack_name
         self.w = w
         self.h = h
-        
-        # Calculate how many game frames to wait between animation frames
+        self.action_chance = action_chance
         self.animation_speed = max(1, int(60 / animation_fps))  
         self.frame_counter = 0
         
@@ -216,9 +217,9 @@ class Desktop_Pet():
                         self.current = (self.current + 1) % len(self.idle_images)
                         self.sprite = self.idle_images[self.current]
                     else:
-                        self.sprite = self.img  # Fallback to default image
+                        self.sprite = self.img  
                 else:
-                    # Use current image if within bounds
+
                     if len(self.idle_images) > 0 and self.current < len(self.idle_images):
                         self.sprite = self.idle_images[self.current]
                     else:
@@ -324,7 +325,7 @@ class Desktop_Pet():
                     
                     if self.on_ground:
                         new_state = random.randint(1, 1000)
-                        if new_state < 101:
+                        if new_state < (101*self.action_chance):
                             new_state = random.choice(RARESTATES)
                             
                             
@@ -525,7 +526,8 @@ for sprite_folder in sprites:
                     pack_name=sprite_folder,
                     w=config['W'],
                     h=config['H'],
-                    animation_fps=config['fps']
+                    animation_fps=config['fps'],
+                    action_chance=config['action']
                 )
                 print(f"Created pet: {sprite_folder} (Size: {config['W']}x{config['H']}, FPS: {config['fps']})")
             except Exception as e:
