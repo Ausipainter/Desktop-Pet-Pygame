@@ -59,8 +59,11 @@ top_thread.start()
 
 petList = []
 STATES = ["walkr","walkl"]
-RARESTATES = ["jump","climb","talk"]
+RARESTATES = ["talk"]
 
+bomb_img = pygame.image.load(os.path.join(EXTRADIR,"Explosion.png"))
+bomb_img = pygame.transform.scale(bomb_img,(300, 300))
+                                  
 splat_img = pygame.image.load(os.path.join(EXTRADIR, "Splat.png"))
 speech_img = pygame.image.load(os.path.join(EXTRADIR,"Speech.png"))
 red = ((100,100,100))
@@ -158,7 +161,8 @@ class Desktop_Pet():
         self.idlepack = os.path.join(self.pack, "Idle")
         self.walkpack = os.path.join(self.pack, "Walk")
         self.extras = os.path.join(self.pack, "Extras")
-        
+        self.possible_states = STATES.copy()
+        self.possible_rare = RARESTATES.copy()
         self.img = pygame.image.load(os.path.join(self.idlepack, "1.png")).convert_alpha()
         self.img = pygame.transform.scale(self.img, (w, h))
         try:
@@ -169,6 +173,14 @@ class Desktop_Pet():
         except:
             self.has_dead_sprite = False
             self.dead = False
+        try:
+            self.bomb_img = pygame.image.load(os.path.join(self.extras, "Bomb.png"))
+            self.bomb_img = pygame.transform.scale(self.bomb_img,(w,h))
+            self.bomb = True
+            self.possible_rare.append("bomb")
+                                                   
+        except:
+            self.bomb = False
         
         self.mask = pygame.mask.from_surface(self.img)
         self.sprite = self.img
@@ -182,7 +194,7 @@ class Desktop_Pet():
         self.free = True
         self.rect = self.sprite.get_rect()
         petList.append(self)
-
+        self.actiondelay = False
         self.state = "none"
         self.on_ground = False
         self.random = 1
@@ -228,7 +240,6 @@ class Desktop_Pet():
             if self.on_ground:
                 self.frame_counter += 1
                 if self.frame_counter % self.animation_speed == 0:
-                    # Add bounds checking here
                     if len(self.idle_images) > 0:
                         self.current = (self.current + 1) % len(self.idle_images)
                         self.sprite = self.idle_images[self.current]
@@ -273,6 +284,8 @@ class Desktop_Pet():
     
         if self.state == "dead":
             self.sprite = self.dead_img
+        if self.state == "bomb":
+            self.sprite = self.bomb_img
     
         self.sprite = pygame.transform.scale(self.sprite, (self.w, self.h))
         WINDOW.blit(self.sprite, (self.x, self.y))
@@ -342,11 +355,11 @@ class Desktop_Pet():
                     if self.on_ground:
                         new_state = random.randint(1, 1000)
                         if new_state < (101*self.action_chance):
-                            new_state = random.choice(RARESTATES)
+                            new_state = random.choice(self.possible_rare)
                             
                             
                         else:
-                            new_state = random.choice(STATES)
+                            new_state = random.choice(self.possible_states)
                         self.state = new_state
                         self.random = random.randint(1,1000)
                         self.current = 0
@@ -374,6 +387,7 @@ class Desktop_Pet():
             self.targety = None
             self.current = 0
             self.climb = False
+            actiondelay = False
 
             self.vx = 0
             self.vy = 0
@@ -382,7 +396,16 @@ class Desktop_Pet():
             
 
 
-            
+    def reset_action(self):
+        self.state = "none"
+        self.delay = True
+        self.current = 0
+        self.targetx = 0
+        self.targety = 0
+        self.actiondelay = False
+        self.delay_timer = 120
+        self.climb = False
+        self.jump_state = 0
     def action(self):
         if self.state == "none":
             return
@@ -411,12 +434,7 @@ class Desktop_Pet():
             self.vx = 0
             
             if self.x >= self.targetx:
-                self.x = self.targetx
-                self.state = "none"
-                self.targetx = None
-                self.delay_timer = 120
-                self.delay = True
-                self.current = 0
+                self.reset_action()
         elif self.state == "jump":
             if self.name == "CappyBara":
                 
@@ -438,11 +456,7 @@ class Desktop_Pet():
 
             elif self.jump_state == 1:
                 if self.on_ground:
-                    self.jump_state = 0
-                    self.state = "none"
-                    self.delay_timer = 120
-                    self.delay = True
-                    self.current = 0
+                    self.reset_action()
         elif self.state == "climb":
             if not self.climb:
                 choice = random.randint(1,2)
@@ -504,7 +518,22 @@ class Desktop_Pet():
                     elif self.delay:
                         self.delay_timer -= 1
 
-                        
+        elif self.state == "bomb":
+            explode = False
+            if self.actiondelay:
+                self.delay_timer -= 1
+                if self.delay_timer <= 0:
+                    self.delay_timer = 0
+                    self.actiondelay = False
+                    explode = True
+            elif not self.actiondelay:
+                self.actiondelay = True
+                self.delay_timer = 240
+            if explode:
+                add_explosion(self.x,self.y,self.w)
+                
+                self.reset_action()
+                
         if self.state == "talk":
             add_speech(self.x + self.width/2,self.y-self.height/4,(random.choice(self.speech)))
             self.state = "none"
@@ -514,8 +543,7 @@ class Desktop_Pet():
                 
                         
                             
-                    
-          
+     
     
     def is_clicked(self, mousepos):
         """Check if clicking on non-transparent part of sprite"""
@@ -573,7 +601,17 @@ def draw_splat():
     for splat in splatList:
         x, y = splat
         WINDOW.blit(splat_img,(x,y))
-        
+
+explodeList = []
+def add_explosion(x,y,w):
+    x -= 150
+    x += w/2
+    y -= 150
+    explodeList.append((x,y))
+def draw_explosion():
+    for explode in explodeList:
+        x, y = explode
+        WINDOW.blit(bomb_img,(x,y))
 speechList = []
 def add_speech(x,y,msg, duration = 120):
     speechList.append([str(msg),x,y,duration])
@@ -623,8 +661,9 @@ while running:
                 if not desktoppet.free:
                     desktoppet.vx, desktoppet.vy = dx, dy
                     
- 
+     
     WINDOW.fill((2, 0, 0))
+    draw_explosion()
     for i in petList:
         if not i.free:
             if dy >= 50:
@@ -646,6 +685,7 @@ while running:
         ##print(i.pack + " " + i.state)
     draw_speech() 
     draw_splat()
+    
     pygame.display.flip()
     clock.tick(FPS)
     
