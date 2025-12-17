@@ -59,7 +59,7 @@ top_thread.start()
 
 petList = []
 STATES = ["walkr","walkl"]
-RARESTATES = ["talk"]
+RARESTATES = ["talk","jump","climb"]
 
 bomb_img = pygame.image.load(os.path.join(EXTRADIR,"Explosion.png"))
 bomb_img = pygame.transform.scale(bomb_img,(300, 300))
