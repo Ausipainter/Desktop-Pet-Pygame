@@ -69,7 +69,40 @@ speech_img = pygame.image.load(os.path.join(EXTRADIR,"Speech.png"))
 red = ((100,100,100))
 speech_img = pygame.transform.scale(speech_img,(WIDTH/15, WIDTH/15))
 font = pygame.font.SysFont(None, 50)
+bombs = []
 
+
+    
+
+class bomb:
+    def __init__(x,y,vx,vy,timer,power):
+        self.x = x
+        self.y =y 
+        self.vx = vx
+        self.vy = vy
+        self.timer = timer
+        self.power = power 
+
+
+    def update_pos(self):
+      
+        self.vy += 0.4
+        
+        self.x += self.vx
+        self.y += self.vy
+        
+ 
+        if self.x > WIDTH - 100:
+            self.x = WIDTH - 100
+            self.vx = -self.vx / 2
+        if self.x < 0:
+            self.x = 0
+            self.vx = -self.vx / 2
+        
+       
+        if self.y >= HEIGHT - 100:
+            self.y = HEIGHT - 100
+            self.vy = 0
 
 
 def read_pet_lines(sprite_folder):
