@@ -90,15 +90,17 @@ All frames should be the same size
 
 <h1>🛠️ Available Commands:</h1>
 
-W   Sets sprite width(pixels)
+W  : Sets sprite width(pixels)
   
-H   Sets sprite height(pixels)
+H  : Sets sprite height(pixels)
   
-fps  Sets animation speed (fps)
+fps : Sets animation speed (fps)
   
-speed  Sets pet speed
+speed : Sets pet speed
 
-action  Directly coorelates to rare actions (talking, climbing, jumping)
+action : Directly coorelates to rare actions (talking, climbing, jumping)
+
+notalk : Dissable pet speech (Don't set to a number)
 
 
 <h1>🔧 Default Settings</h1>
