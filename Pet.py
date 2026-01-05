@@ -291,8 +291,9 @@ class Desktop_Pet():
             img = pygame.image.load(img_path).convert_alpha()
             self.idle_images.append(img)
 
-        
-        self.possible_rare.remove('talk')
+        if not self.talk:
+            
+            self.possible_rare.remove('talk')
 
         
     def draw(self):
@@ -416,6 +417,8 @@ class Desktop_Pet():
                         new_state = random.randint(1, 1000)
                         if new_state < (101*self.action_chance):
                             new_state = random.choice(self.possible_rare)
+                            if new_state == "bomb":
+                                new_state = random.choice(self.possible_rare)
                             
                             
                         else:
@@ -592,7 +595,7 @@ class Desktop_Pet():
                 self.delay_timer = 240
             if explode:
 
-                explodey = -random.randint(1,30)
+                explodey = -random.randint(10,30)
                     
                 explode_dir = random.randint(1,2)
                 if explode_dir == 1:
@@ -608,7 +611,7 @@ class Desktop_Pet():
                         x=self.x,
                         y=self.y
                     ))
-                add_explosion(self.x,self.y,self.w)
+                
                 
                 self.reset_action()
                 
