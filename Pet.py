@@ -220,7 +220,10 @@ class Desktop_Pet():
         self.pack = os.path.join(SPRITEDIR, pack_name)
         self.idlepack = os.path.join(self.pack, "Idle")
         self.walkpack = os.path.join(self.pack, "Walk")
+        self.climbpack = os.path.join(self.pack, "Climb")
+        
         self.extras = os.path.join(self.pack, "Extras")
+        self.flipped = False
         self.possible_states = STATES.copy()
         self.possible_rare = RARESTATES.copy()
         self.img = pygame.image.load(os.path.join(self.idlepack, "1.png")).convert_alpha()
@@ -271,7 +274,7 @@ class Desktop_Pet():
         self.original = self.sprite
         self.rot = 0
         self.climb = False
-        
+        self.climb_images = []
         self.idle_images = []
         files = sorted(
             [f for f in os.listdir(self.walkpack) if f.lower().endswith(('.png', '.jpg', '.jpeg'))],
@@ -291,12 +294,23 @@ class Desktop_Pet():
             img = pygame.image.load(img_path).convert_alpha()
             self.idle_images.append(img)
 
+        files = sorted(
+            [f for f in os.listdir(self.climbpack) if f.lower().endswith(('.png', '.jpg', '.jpeg'))],
+            key=lambda x: int(''.join(filter(str.isdigit, x)) or 0)
+        )
+                
+        for file in files:
+            img_path = os.path.join(self.climbpack, file)
+            img = pygame.image.load(img_path).convert_alpha()
+            self.climb_images.append(img) 
         if not self.talk:
             
             self.possible_rare.remove('talk')
+            
 
         
     def draw(self):
+        self.flipped = False
         if self.state == "none":
             if self.on_ground:
                 self.frame_counter += 1
@@ -331,24 +345,46 @@ class Desktop_Pet():
     
         elif self.state == "walkr" or (self.x != self.targetx and self.targetx == self.wallr):
             self.frame_counter += 1
+            self.flipped = True
             if self.frame_counter % self.animation_speed == 0:
                 if len(self.walk_images) > 0:
                     self.current = (self.current + 1) % len(self.walk_images)
-                    self.sprite = pygame.transform.flip(self.walk_images[self.current], True, False)
+                    self.sprite = self.walk_images[self.current]
                 else:
                     self.sprite = pygame.transform.flip(self.img, True, False)
             else:
                 if len(self.walk_images) > 0 and self.current < len(self.walk_images):
-                    self.sprite = pygame.transform.flip(self.walk_images[self.current], True, False)
+                    self.sprite = self.walk_images[self.current]
+                   
                 else:
-                    self.sprite = pygame.transform.flip(self.img, True, False)
-    
+                    self.sprite = self.img
+                    
+        elif self.state == "climb":
+            if self.x >= self.wallr:
+                self.flipped = True
+            self.frame_counter += 1
+            if self.frame_counter % self.animation_speed == 0:
+                if len(self.climb_images) > 0:
+                    self.current = (self.current + 1) % len(self.climb_images)
+                    self.sprite = self.climb_images[self.current]
+                else:
+                    self.sprite = self.img
+            else:
+                if len(self.climb_images) > 0 and self.current < len(self.climb_images):
+                    self.sprite = self.climb_images[self.current]
+                else:
+                    self.sprite = self.img
+            
         if self.state == "dead":
             self.sprite = self.dead_img
         if self.state == "bomb":
             self.sprite = self.bomb_img
-    
+        
+            
         self.sprite = pygame.transform.scale(self.sprite, (self.w, self.h))
+        if self.flipped:
+            self.sprite = pygame.transform.flip(self.sprite, True, False)
+            
         WINDOW.blit(self.sprite, (self.x, self.y))
             
                 
