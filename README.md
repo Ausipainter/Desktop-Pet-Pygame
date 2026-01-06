@@ -42,7 +42,9 @@ To add your own pet:
 
 &emsp;&emsp;A Climb folder 
 
-&emsp;Inside of walk, climb, and idle folders add your animation images(see animation Rules below) 
+&emsp;&emsp;A Fall folder 
+
+&emsp;Inside of walk, climb, fall, and idle folders add your animation images(see animation Rules below) 
   
 &emsp;Even if you do not have an animation for them you must have at least one image in each
   
@@ -57,6 +59,8 @@ To add your own pet:
 &emsp;&emsp;PetName/Sprites/Walk/1.png, 2.png....
 
 &emsp;&emsp;PetName/Sprites/Climb/1.png, 2.png....
+
+&emsp;&emsp;PetName/Sprites/Fall/1.png, 2.png....
 
 &emsp;&emsp;PetName/Configuration.txt 
 
