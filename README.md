@@ -52,15 +52,17 @@ To add your own pet:
 
 &emsp;Your pet’s sprite folder must contain the following structure:
   
-&emsp;&emsp;PetName/Sprites/idle/1.png, 2.png....
+&emsp;&emsp;PetName/Sprites/Idle/1.png, 2.png....
 
-&emsp;&emsp;PetName/Sprites/walk/1.png, 2.png....
+&emsp;&emsp;PetName/Sprites/Walk/1.png, 2.png....
+
+&emsp;&emsp;PetName/Sprites/Climb/1.png, 2.png....
 
 &emsp;&emsp;PetName/Configuration.txt 
 
 &emsp;&emsp;PetName/Display.png
 
-(Display.png is used to display the pet in the selection menu)
+(Display.png is used to display the pet in the selection menu and is not required)
 
 
 
