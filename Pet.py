@@ -221,13 +221,19 @@ class Desktop_Pet():
         self.idlepack = os.path.join(self.pack, "Idle")
         self.walkpack = os.path.join(self.pack, "Walk")
         self.climbpack = os.path.join(self.pack, "Climb")
-        
+        self.fallpack = os.path.join(self.pack, "Fall")
         self.extras = os.path.join(self.pack, "Extras")
         self.flipped = False
         self.possible_states = STATES.copy()
         self.possible_rare = RARESTATES.copy()
         self.img = pygame.image.load(os.path.join(self.idlepack, "1.png")).convert_alpha()
         self.img = pygame.transform.scale(self.img, (w, h))
+        self.rare_animations = {}
+        try:
+            self.rareidlepack = os.path.join(self.pack,"Rare Idle")
+
+        except:
+            self.rareidlepack = None
         try:
             self.dead_img = pygame.image.load(os.path.join(self.extras, "Dead.png"))
             self.dead_img = pygame.transform.scale(self.dead_img, (w, h))
@@ -276,6 +282,7 @@ class Desktop_Pet():
         self.climb = False
         self.climb_images = []
         self.idle_images = []
+        self.animationChoice = None
         files = sorted(
             [f for f in os.listdir(self.walkpack) if f.lower().endswith(('.png', '.jpg', '.jpeg'))],
             key=lambda x: int(''.join(filter(str.isdigit, x)) or 0)
@@ -302,10 +309,41 @@ class Desktop_Pet():
         for file in files:
             img_path = os.path.join(self.climbpack, file)
             img = pygame.image.load(img_path).convert_alpha()
-            self.climb_images.append(img) 
+            self.climb_images.append(img)
+
+        files = sorted(
+            [f for f in os.listdir(self.climbpack) if f.lower().endswith(('.png', '.jpg', '.jpeg'))],
+            key=lambda x: int(''.join(filter(str.isdigit, x)) or 0)
+        )
+        self.fall_images = []
+        for file in files:
+            img_path = os.path.join(self.fallpack, file)
+            img = pygame.image.load(img_path).convert_alpha()
+            self.fall_images.append(img)
+        if self.rareidlepack and os.path.exists(self.rareidlepack):
+            for anim_name in os.listdir(self.rareidlepack):
+                anim_path = os.path.join(self.rareidlepack, anim_name)
+                if os.path.isdir(anim_path):
+                   
+                    files = sorted(
+                        [f for f in os.listdir(anim_path) if f.lower().endswith(('.png', '.jpg', '.jpeg'))],
+                        key=lambda x: int(''.join(filter(str.isdigit, x)) or 0)
+                    )
+                    images = []
+                    for file in files:
+                        img_path = os.path.join(anim_path, file)
+                        img = pygame.image.load(img_path).convert_alpha()
+                        images.append(img)
+                    if images: 
+                        self.rare_animations[anim_name] = images
+        
+        
         if not self.talk:
             
             self.possible_rare.remove('talk')
+
+        if self.rare_animations != {}:
+            self.possible_rare.append('rareidle')
             
 
         
@@ -327,7 +365,21 @@ class Desktop_Pet():
                     else:
                         self.sprite = self.img
             else:
-                self.sprite = self.img
+                if self.free:
+                    if self.vy > 0:
+                        
+                    
+                        self.frame_counter += 1
+                        if self.frame_counter % self.animation_speed == 0:
+                            if len(self.fall_images) > 0:
+                                self.current = (self.current + 1) % len(self.fall_images)
+                                self.sprite = self.fall_images[self.current]
+                            else:
+                                self.sprite = self.img
+                    else:
+                        self.sprite = self.img
+                else:
+                    self.sprite = self.img
     
         elif self.state == "walkl" or (self.x != self.targetx and self.targetx == 0):
             self.frame_counter += 1
@@ -374,6 +426,25 @@ class Desktop_Pet():
                     self.sprite = self.climb_images[self.current]
                 else:
                     self.sprite = self.img
+        elif self.state == "rareidle":
+            if self.animationChoice is not None:
+                self.animationChoice = random.choice(list(self.rare_animations.keys()))
+                self.current = 0
+
+                if self.animationChoice in self.rare_animations:
+                        anim_frames = self.rare_animations[self.animationChoice]
+                        if anim_frames:
+                            self.frame_counter += 1
+                            if self.frame_counter % self.animation_speed == 0:
+                                self.current = (self.current + 1) % len(anim_frames)
+                            
+                            self.sprite = anim_frames[self.current]
+                        else:
+                            self.sprite = self.img
+                else:
+                    self.sprite = self.img
+            
+                
             
         if self.state == "dead":
             self.sprite = self.dead_img
@@ -650,6 +721,17 @@ class Desktop_Pet():
                 
                 
                 self.reset_action()
+        if self.state == "rareidle":
+            if self.actiondelay:
+                self.delay_timer -= 1
+                if self.delay_timer <= 0:
+                    self.delay_timer = 0
+                    self.actiondelay = False
+                    self.reset_action()
+            elif not self.actiondelay:
+                self.actiondelay = True
+                self.delay_timer = 240
+                
                 
         if self.state == "talk":
             add_speech(self.x + self.width/2,self.y-self.height/4,(random.choice(self.speech)))
