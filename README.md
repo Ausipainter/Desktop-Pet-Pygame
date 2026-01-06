@@ -40,7 +40,9 @@ To add your own pet:
 
 &emsp;&emsp;A Idle folder 
 
-&emsp;Inside of walk and idle folders add your animation images(see animation Rules below) 
+&emsp;&emsp;A Climb folder 
+
+&emsp;Inside of walk, climb, and idle folders add your animation images(see animation Rules below) 
   
 &emsp;Even if you do not have an animation for them you must have at least one image in each
   
