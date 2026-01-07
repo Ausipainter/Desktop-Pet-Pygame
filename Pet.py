@@ -229,11 +229,13 @@ class Desktop_Pet():
         self.img = pygame.image.load(os.path.join(self.idlepack, "1.png")).convert_alpha()
         self.img = pygame.transform.scale(self.img, (w, h))
         self.rare_animations = {}
-        try:
-            self.rareidlepack = os.path.join(self.pack,"Rare Idle")
-
-        except:
+        self.rareidlepack = os.path.join(self.pack,"Rare Idle")
+        if os.path.exists(self.rareidlepack):
+            print("Rare Idle Found")
+            print(self.rareidlepack)
+        else:
             self.rareidlepack = None
+            print("Rare Idle Folder Not found")
         try:
             self.dead_img = pygame.image.load(os.path.join(self.extras, "Dead.png"))
             self.dead_img = pygame.transform.scale(self.dead_img, (w, h))
@@ -312,7 +314,7 @@ class Desktop_Pet():
             self.climb_images.append(img)
 
         files = sorted(
-            [f for f in os.listdir(self.climbpack) if f.lower().endswith(('.png', '.jpg', '.jpeg'))],
+            [f for f in os.listdir(self.fallpack) if f.lower().endswith(('.png', '.jpg', '.jpeg'))],
             key=lambda x: int(''.join(filter(str.isdigit, x)) or 0)
         )
         self.fall_images = []
@@ -336,16 +338,22 @@ class Desktop_Pet():
                         images.append(img)
                     if images: 
                         self.rare_animations[anim_name] = images
+             
         
         
         if not self.talk:
             
             self.possible_rare.remove('talk')
 
-        if self.rare_animations != {}:
-            self.possible_rare.append('rareidle')
+        if self.rare_animations:
+            self.possible_rare.append("rareidle")
+            print("Rare Idles Loaded:", list(self.rare_animations.keys()))
+        else:
+            print("No Rare Idles Found")
             
-
+            
+        print(self.name, "possible rare:", self.possible_rare)
+        print(self.name, "rare animations:", self.rare_animations.keys())
         
     def draw(self):
         self.flipped = False
@@ -427,22 +435,23 @@ class Desktop_Pet():
                 else:
                     self.sprite = self.img
         elif self.state == "rareidle":
-            if self.animationChoice is not None:
+            if self.animationChoice is None:
                 self.animationChoice = random.choice(list(self.rare_animations.keys()))
-                self.current = 0
-
-                if self.animationChoice in self.rare_animations:
-                        anim_frames = self.rare_animations[self.animationChoice]
-                        if anim_frames:
-                            self.frame_counter += 1
-                            if self.frame_counter % self.animation_speed == 0:
-                                self.current = (self.current + 1) % len(anim_frames)
-                            
-                            self.sprite = anim_frames[self.current]
-                        else:
-                            self.sprite = self.img
+                self.current = 0  
+            
+            if self.animationChoice in self.rare_animations:
+                anim_frames = self.rare_animations[self.animationChoice]
+                if anim_frames:
+                    self.frame_counter += 1
+                    if self.frame_counter % self.animation_speed == 0:
+                        if self.current < len(anim_frames) - 1:
+                            self.current += 1
+                    
+                    self.sprite = anim_frames[self.current]
                 else:
                     self.sprite = self.img
+            else:
+                self.sprite = self.img
             
                 
             
@@ -576,12 +585,15 @@ class Desktop_Pet():
         self.delay_timer = 120
         self.climb = False
         self.jump_state = 0
+        self.animationChoice = None 
     def action(self):
         if self.state == "none":
             return
         if self.state == "walkl":
             if self.targetx is None:
                 self.targetx = self.x - self.random
+                if self.targetx >= self.x - 10:
+                    self.targetx = self.x - 100
             if self.targetx <= 0:
                 self.targetx = 0 
             
@@ -598,6 +610,8 @@ class Desktop_Pet():
         elif self.state == "walkr":
             if self.targetx is None:
                 self.targetx = self.x + self.random
+                if self.targetx <= self.x + 10:  
+                    self.targetx = self.x + 100
             if self.targetx >= WIDTH - self.width:
                 self.targetx = WIDTH - self.width
             self.x += self.speed
@@ -721,16 +735,21 @@ class Desktop_Pet():
                 
                 
                 self.reset_action()
-        if self.state == "rareidle":
-            if self.actiondelay:
-                self.delay_timer -= 1
-                if self.delay_timer <= 0:
-                    self.delay_timer = 0
-                    self.actiondelay = False
-                    self.reset_action()
-            elif not self.actiondelay:
-                self.actiondelay = True
-                self.delay_timer = 240
+        elif self.state == "rareidle":
+            if self.animationChoice in self.rare_animations:
+                anim_frames = self.rare_animations[self.animationChoice]
+                
+              
+                if self.current >= len(anim_frames) - 1:
+                    if not self.actiondelay:
+                 
+                        self.actiondelay = True
+                        self.delay_timer = 30 
+                    else:
+                        self.delay_timer -= 1
+                        if self.delay_timer <= 0:
+                            self.animationChoice = None
+                            self.reset_action()
                 
                 
         if self.state == "talk":
