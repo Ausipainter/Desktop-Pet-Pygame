@@ -102,6 +102,8 @@ action : Directly coorelates to rare actions (talking, climbing, jumping)
 
 notalk : Dissable pet speech (Don't set to a number)
 
+nojump : Dissable pet jumping
+
 
 <h1>🔧 Default Settings</h1>
 
