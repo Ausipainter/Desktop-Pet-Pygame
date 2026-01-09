@@ -40,6 +40,9 @@ To add your own pet:
 
 &emsp;&emsp;A Idle folder 
 
+&emsp;&emsp;A Rare Idle folder (Optional) Put An animation inside of for it to have a chance of playing istead of the default idle animation (See animation rules below)
+
+
 &emsp;Inside of walk and idle folders add your animation images(see animation Rules below) 
   
 &emsp;Even if you do not have an animation for them you must have at least one image in each
@@ -50,9 +53,13 @@ To add your own pet:
 
 &emsp;Your pet’s sprite folder must contain the following structure:
   
-&emsp;&emsp;PetName/Sprites/idle/1.png, 2.png....
+&emsp;&emsp;PetName/Sprites/Idle/1.png, 2.png....
 
-&emsp;&emsp;PetName/Sprites/walk/1.png, 2.png....
+&emsp;&emsp;PetName/Sprites/Walk/1.png, 2.png....
+
+&emsp;&emsp;PetName/Sprites/Fall/1.png, 2.png....
+
+&emsp;&emsp;PetName/Sprites/Climb/1.png, 2.png....
 
 &emsp;&emsp;PetName/Configuration.txt 
 
