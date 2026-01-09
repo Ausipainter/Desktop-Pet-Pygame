@@ -178,7 +178,9 @@ def read_size_config(sprite_folder):
                     config['speed'] = float(value)
                 elif key == 'action':
                     config['action'] = float(value)
-                elif key == 'notalk':
+            else:
+                key = command.strip().lower()
+                if key == 'notalk':
                     config['talk'] = False
                 elif key == 'nojump':
                     config['canjump'] = False
@@ -344,11 +346,20 @@ class Desktop_Pet():
              
         
         
+
+            
+            
+        print(self.name, "possible rare:", self.possible_rare)
+        print(self.name, "rare animations:", self.rare_animations.keys())
+        
         if not self.talk:
             
             self.possible_rare.remove('talk')
+            print("Talk Removed")
+            print(self.possible_rare)
+            
 
-        if not self.jump:
+        if not self.canjump:
             self.possible_rare.remove('jump')
             
 
@@ -358,10 +369,6 @@ class Desktop_Pet():
         else:
             print("No Rare Idles Found")
             
-            
-        print(self.name, "possible rare:", self.possible_rare)
-        print(self.name, "rare animations:", self.rare_animations.keys())
-        
     def draw(self):
         self.flipped = False
         if self.state == "none":
@@ -761,7 +768,7 @@ class Desktop_Pet():
                             self.reset_action()
                 
                 
-        if self.state == "talk":
+        elif self.state == "talk":
             add_speech(self.x + self.width/2,self.y-self.height/4,(random.choice(self.speech)))
             self.state = "none"
             self.delay = True
@@ -800,7 +807,8 @@ for sprite_folder in sprites:
                     animation_fps=config['fps'],
                     action_chance=config['action'],
                     speech = phrase,
-                    talk = config['talk']
+                    talk = config['talk'],
+                    canjump = config['canjump']
                 )
                 print(f"Created pet: {sprite_folder} (Size: {config['W']}x{config['H']}, FPS: {config['fps']})")
             except Exception as e:
